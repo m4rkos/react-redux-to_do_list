@@ -1,0 +1,12 @@
+{
+  "name": "todos",
+  "displayName": "todos",
+  "expo": {
+    "name": "todos",
+    "slug": "todos",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
