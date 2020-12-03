@@ -1,8 +1,11 @@
 import React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { connect } from 'react-redux';
+
+import { addTodo } from '../actions';
 import Input from './Input';
 
-export default class TodoForm extends React.Component {
+class TodoForm extends React.Component {
     constructor(props){
         super(props);
         this.state = {
@@ -14,8 +17,13 @@ export default class TodoForm extends React.Component {
         this.setState({ text });
     }
 
-    onPress(){
-        Alert.alert(this.state.text);
+    onPress(){        
+        if(this.state.text != ''){
+            this.props.dispatchAddTodo(this.state.text);
+            this.setState({text:''})
+        }else{
+            Alert.alert('Preencha o texto!!');
+        }
     }
 
     render() {
@@ -67,3 +75,20 @@ const styles = StyleSheet.create({
     },
 
 })
+
+// Currying
+// (mapStateToProps, mapDispatchToProps) (function)
+
+// const mapDispatchToProps = dispatch =>{
+//     return {
+//         dispatchAddTodo: text => dispatch(addTodo(text))
+//     }
+// }
+
+// const mapDispatchToProps = {
+//     dispatchAddTodo: addTodo
+// }
+
+// export default connect(null, mapDispatchToProps)(TodoForm);
+
+export default connect(null, {dispatchAddTodo: addTodo})(TodoForm);
