@@ -1,11 +1,14 @@
-import { ADD_TODO, TOGGLE_TODO } from '../actions';
+import { 
+    ADD_TODO, 
+    TOGGLE_TODO, 
+    UPDATE_TODO 
+} from '../actions';
 
 let nextId = 1;
 
 const todoListReducer = (state = [], action) =>{
     switch (action.type) {
-        case ADD_TODO:
-            //console.log('addTodo called !!!', action.text);
+        case ADD_TODO:            
             const newTodo = {
                 id: nextId++,
                 text: action.text,
@@ -13,8 +16,7 @@ const todoListReducer = (state = [], action) =>{
             }
             return [...state, newTodo];
 
-        case TOGGLE_TODO:
-            //console.log('aqui');
+        case TOGGLE_TODO:            
             action.todoId;
             return state.map(todo => {
                 if(todo.id === action.todoId)
@@ -23,6 +25,15 @@ const todoListReducer = (state = [], action) =>{
                         done: !todo.done
                     }
                     //return Object.assign({}, todo, { done: !todo.done })
+                return todo;
+            });
+
+        case UPDATE_TODO:
+            console.log('tesgg');
+            return state.map(todo => {
+                if(todo.id === action.todo.id){
+                    return action.todo;
+                }
                 return todo;
             });
 

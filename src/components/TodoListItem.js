@@ -1,15 +1,18 @@
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
-const TodoListItem = ({ todo, onPressTodo }) => {		    
+const TodoListItem = ({ todo, onPressTodo, onLongPressTodo }) => {		    
 	return (
-		<TouchableOpacity onPress={() => {onPressTodo()} }>
+		<TouchableOpacity 
+			onPress={() => {onPressTodo()} }
+			onLongPress={()=>{onLongPressTodo()}}
+			>
 			<View style={styles.line}>				
 				<Text style={[
 					styles.lineText,
-					todo.done ? styles.lineThough : null
+					todo.done ? styles.lineThough : styles.normal
 					]}>
-					{ todo.text } { todo.done ? 1 : 2 }
+					{ todo.text }
 				</Text>
 			</View>
 		</TouchableOpacity>
@@ -25,13 +28,17 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		flexDirection: 'row',
 	},
+	normal: {
+		color: '#111',
+	},
 	lineText: {
 		fontSize: 20,
 		paddingLeft: 15,
 		flex: 7
 	},
 	lineThough: {
-		textDecorationLine: 'line-through',
+		textDecorationLine: 'line-through',		
+		color: '#eb4d4b',
 	},
 	avatar: {
 		aspectRatio: 1,
