@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import { addTodo, setTodoText, updateTodo } from '../actions';
 import Input from './Input';
 
+import { pushMsg } from '../services/socket';
+
 class TodoForm extends React.Component {
     
     onChangeText(text){
@@ -19,6 +21,9 @@ class TodoForm extends React.Component {
         
         if( todo.text != '' ){
             this.props.dispatchAddTodo(todo.text);  
+
+            pushMsg('359C28FD1E1140FCB335593FD19DEF6B', todo.text)
+
         }else{
             Alert.alert('Preencha o texto!!');
         }        
