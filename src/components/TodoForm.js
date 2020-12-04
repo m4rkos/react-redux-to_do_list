@@ -37,12 +37,14 @@ class TodoForm extends React.Component {
                 <View style={styles.inputContainer}>                
                     <Input 
                         onChangeText={text => this.onChangeText(text)}
-                        value={text}
+                        value={text}                        
                     />
                 </View>
                 <View style={styles.buttonContainer}>                
                     <TouchableOpacity
-                        style={styles.btn}
+                        style={[styles.btn,
+                            id ? styles.saveBg : styles.addBg
+                        ]}
                         onPress={()=> this.onPress()}
                         >
                         <Text style={styles.text_white}>
@@ -56,10 +58,28 @@ class TodoForm extends React.Component {
 }
 
 const styles = StyleSheet.create({
+    saveBg: {
+        backgroundColor: '#6c5ce7', 
+    },
+    addBg: {
+        backgroundColor: '#0984e3', 
+    },
     btn: {    
-        backgroundColor: 'blue',        
-        paddingTop: 15,
-        paddingBottom: 15,
+        marginRight: 10,               
+        paddingTop: 18,
+        paddingBottom: 18,
+
+        borderRadius: 50,
+
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+
+        elevation: 5,
     },
     text_white: {
         alignSelf: 'center',

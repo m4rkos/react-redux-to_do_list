@@ -18,6 +18,7 @@ const editingTodoReducer = (state = INITIAL_STATE, action) => {
                 ...state, 
                 text: action.text
             };
+            
         case ADD_TODO:
         case UPDATE_TODO:
             return INITIAL_STATE;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, FlatList, SafeAreaView } from 'react-native';
 import { connect } from 'react-redux';
 
 import TodoListItem from './TodoListItem';
@@ -14,12 +14,14 @@ const TodoList = ({ todos, dispatchToggleTodo, dispatchSetEditingTodo }) => (
                 onPressTodo={() => dispatchToggleTodo(todo.id)}
                 onLongPressTodo={() => dispatchSetEditingTodo(todo)}
             />
-        ))}
+        ))}           
     </View>
 );
 
 const style = StyleSheet.create({
-
+    width: {
+        width: 100,
+    },
 })
 
 const mapStateToProps = state =>{

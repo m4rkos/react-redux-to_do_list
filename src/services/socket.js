@@ -1,7 +1,6 @@
 //import AsyncStorage from '@react-native-community/async-storage';
 //import * as db from '../model/data_base';
 import { addTodo, setTodoText, updateTodo } from '../actions';
-
 import store from '../store';
 
 let ip = ['messenger-hom.gelt.com.br:3030', '187.18.106.9:3030'];
@@ -14,7 +13,6 @@ let WebSocketStateEnum = {
 };
 let wsChannel;
 let msgQueue = [];
-
 
 export const socket = () =>{        
     let socket = new WebSocket(`wss://${ip[0]}`);  
