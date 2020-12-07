@@ -8,7 +8,8 @@ import {
 const INITIAL_STATE = {
     id: null,
     text: '',
-    done: false
+    done: false,
+    key_from_me: 2
 };
 
 const editingTodoReducer = (state = INITIAL_STATE, action) => {

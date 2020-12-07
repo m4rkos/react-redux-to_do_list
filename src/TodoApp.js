@@ -17,9 +17,9 @@ export default class TodoApp extends React.Component {
                 <View style={style.brand}>
                     <Image
                         style={style.tinyLogo}
-                        source={{
-                        uri: 'https://messenger-hom.gelt.com.br/assets/img/brand/blue.png',
-                        }}
+                        source={
+                            require('../assets/images/talkall_logo_color.png')
+                        }
                     />    
                 </View>            
                 <View style={style.container}>                    
@@ -51,7 +51,9 @@ const style = StyleSheet.create(
             height: 49,
         },
         form: {
-            //flex: 1,
+            backgroundColor: '#f1f1f1',
+            paddingTop: 10,
+            paddingBottom: 5,
         },
     }
 )

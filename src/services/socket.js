@@ -102,7 +102,7 @@ export function sendMessage(task) {
                         }
                         console.log(arguments)   
                         if(data_msg.key_from_me == 1){
-                            store.dispatch(addTodo(data_msg.msg));
+                            store.dispatch(addTodo(data_msg.msg, data_msg.key_from_me));
                         }                                                
                         //storeContact('msgsNew', data_msg) 
                         //db.RegisterMSG(data_msg)

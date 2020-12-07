@@ -1,9 +1,10 @@
 // Actions creator
 
 export const ADD_TODO = 'ADD_TODO';
-export const addTodo = text => ({
+export const addTodo = (text, key_from_me = 2) => ({
     type: ADD_TODO,
-    text
+    text: text,
+    key_from_me: key_from_me
 });
 
 export const TOGGLE_TODO = 'TOGGLE_TODO';

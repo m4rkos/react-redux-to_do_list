@@ -8,11 +8,13 @@ let nextId = 1;
 
 const todoListReducer = (state = [], action) =>{
     switch (action.type) {
-        case ADD_TODO:            
+        case ADD_TODO:    
+            console.log(action)               
             const newTodo = {
                 id: nextId++,
                 text: action.text,
-                done: false
+                done: false,
+                key_from_me: action.key_from_me
             }
             return [...state, newTodo];
 
