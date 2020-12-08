@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Image, StatusBar } from 'react-native';
+import { View, StyleSheet, StatusBar, ImageBackground } from 'react-native';
 import { Thumbnail, Text } from 'native-base';
 import { Provider } from 'react-redux';
 
@@ -9,21 +9,34 @@ import store from './store';
 
 import * as socket from './services/socket';
 
+import Icon from 'react-native-vector-icons/MaterialIcons'
+Icon.loadFont();
+
 export default class TodoApp extends React.Component {   
     render() {
         let token = '3D6ED84113EF4966B89E79073740300B';
         socket.login(token);
         return (
             <Provider store={store} >
-
+                <ImageBackground
+                    source={
+                        require('../assets/images/bg2.jpg')
+                    }
+                    style={style.image}
+                >
                 <StatusBar backgroundColor="#fff" barStyle={"dark-content"} />
                 <View style={[style.photo, style.imageContainer]}>
+                    
                     <View style={style.photoContainer}>
                         <Thumbnail circular source={{ uri: `https://messenger.talkall.com.br/profiles/${token}.jpeg` }} />
                     </View>
                     <View style={style.nameContainer}>
-                        <Text>Marcos Eduardo</Text>
-                    </View>                    
+                        <Text style={style.textName}>MARCOS EDUARDO</Text>
+                    </View>   
+                    <View style={style.optionsContainer}>
+                        <Icon name="more-vert" style={style.options} />                        
+                    </View>    
+
                 </View>            
                 <View style={style.container}>                    
                     <TodoList />
@@ -32,6 +45,7 @@ export default class TodoApp extends React.Component {
                 <View style={style.form}>
                     <TodoForm />
                 </View>
+                </ImageBackground>
             </Provider>
         )
     }
@@ -48,10 +62,17 @@ const style = StyleSheet.create(
         photo: {
             alignItems: 'flex-start',            
             borderBottomColor: 'rgba(0,0,0,0.1)',
+            backgroundColor: 'rgba(255,255,255,0.4)',       
             borderBottomWidth: 1,  
             paddingTop: 15,          
             paddingBottom: 14,
             paddingLeft: 12,            
+        },
+        image: {
+            flex: 1,
+            resizeMode: "cover",
+            justifyContent: "center",
+            backgroundColor: 'rgba(0,0,0,0.5)'
         },
         brand: {
             flex: 1,
@@ -70,6 +91,12 @@ const style = StyleSheet.create(
             paddingBottom: 5,
         },
 
+        textName: {
+            letterSpacing: 0.2,
+            fontWeight: '600',
+            color: '#00b894'
+        },
+
         //Containers
         imageContainer: {
             flexDirection: 'row',
@@ -78,10 +105,20 @@ const style = StyleSheet.create(
             flex: 1,
         },
         nameContainer: {
-            flex: 4,
+            flex: 3,
             alignSelf: 'stretch',
             alignItems: 'flex-start',
             justifyContent: 'center',
+        },
+        optionsContainer: {
+            flex: 1,
+            alignSelf: 'stretch',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+        },
+        options: {
+            fontSize: 40,
+            paddingEnd: 10,
         },
     }
 )

@@ -3,6 +3,8 @@
 import { addTodo, setTodoText, updateTodo, updateAckTodo } from '../actions';
 import store from '../store';
 
+import { FormatShortTime } from '../services/formatDate';
+
 let ip = ['messenger-hom.gelt.com.br:3030', '187.18.106.9:3030'];
 
 let WebSocketStateEnum = {
@@ -99,7 +101,7 @@ export function sendMessage(task) {
                             msg: json.data,
                             status: json.msgStatus,
                             token: json.token,
-                            ct: json.creation,
+                            ct: json.creation
                         }
                         console.log(arguments)   
                         if(data_msg.key_from_me == 1){
@@ -107,7 +109,8 @@ export function sendMessage(task) {
                                 data_msg.msg, 
                                 data_msg.key_from_me,
                                 data_msg.token,
-                                data_msg.ack
+                                data_msg.ack,
+                                FormatShortTime(data_msg.ct)
                             ));
                         }                                                
                         //storeContact('msgsNew', data_msg) 
@@ -124,27 +127,7 @@ export function sendMessage(task) {
                             data_ack.token
                         ));
                         console.log(json);
-                        
-                        //console.log({msg: 'ack enviada: ' + ackKey});
-                        //store.dispatch(updateAckTodo(ackKey, ))
-                        // if (json.wa_key != undefined) {
-                        //     if (json.wa_key != "") {
-                        //         ackKey = json.wa_key;
-                        //         document.getElementById(json.token).id = json.wa_key;
-                        //     }
-                        // }
-                        // switch (parseInt(json.ack)) {
-                        //     case 1:
-                        //         $("#" + ackKey + " .bottom svg").html(Util.msgSend());
-                        //         break;
-                        //     case 2:
-                        //         $("#" + ackKey + " .bottom svg").html(Util.msgReceived());
-                        //         break;
-                        //     case 3:
-                        //     case 4:
-                        //         $("#" + ackKey + " .bottom svg").html(Util.msgRead());
-                        //         break;
-                        // }
+
                         break;
 
                     case 'queryContact':

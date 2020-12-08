@@ -30,7 +30,7 @@ const TodoListItem = ({ todo, onPressTodo, onLongPressTodo }) => {
 					<Text style={ todo.done ? styles.lineThough : styles.normal } >
 						{ todo.text} 
 					</Text>			
-					<Text style={styles.time}>00:00 </Text>{todo.key_from_me == 2 ? Ack(todo.ack) : null }
+					<Text style={todo.key_from_me == 2 ? styles.time : styles.time2}>{todo.ct} </Text>{todo.key_from_me == 2 ? Ack(todo.ack) : null }
 				</View>				
 			</View>
 		</TouchableOpacity>
@@ -92,6 +92,12 @@ const styles = StyleSheet.create({
 	time: {		
 		alignSelf: 'flex-end',
 		paddingEnd: 18,
+		marginTop: 10,
+		marginBottom: -6,		
+	},
+	time2: {		
+		alignSelf: 'flex-end',
+		paddingEnd: 0,
 		marginTop: 10,
 		marginBottom: -6,		
 	},

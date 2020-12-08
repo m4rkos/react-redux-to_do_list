@@ -7,13 +7,15 @@ import Input from './Input';
 
 import { pushMsg, makeId } from '../services/socket';
 
+import { FormatShortTime } from '../services/formatDate';
+
+import Icon from 'react-native-vector-icons/MaterialIcons'
+Icon.loadFont();
+
 class TodoForm extends React.Component {
     
-    onChangeText(text){
-        //const { todo } = this.props;
-        //if(todo.key_from_me == 2){
-        this.props.dispatchSetTodoText(text);        
-        //}        
+    onChangeText(text){        
+        this.props.dispatchSetTodoText(text);                
     }
 
     onPress(){        
@@ -24,7 +26,9 @@ class TodoForm extends React.Component {
         
         if( todo.text != '' ){
             let token = makeId();
-            this.props.dispatchAddTodo(todo.text, 2, token);              
+            let ct = Math.floor(Date.now() / 1000);
+
+            this.props.dispatchAddTodo(todo.text, 2, token, 0, FormatShortTime(ct));              
             pushMsg('359C28FD1E1140FCB335593FD19DEF6B', todo.text, token)
 
         }else{
@@ -51,7 +55,7 @@ class TodoForm extends React.Component {
                         onPress={()=> this.onPress()}
                         >
                         <Text style={styles.text_white}>
-                            {id ? "Save": "Add"}
+                            {id ? <Icon name="save" size={20} color="#fff" style={styles.check} /> : <Icon name="send" size={20} color="#fff" style={styles.check} />}
                         </Text>
                     </TouchableOpacity>
                 </View>

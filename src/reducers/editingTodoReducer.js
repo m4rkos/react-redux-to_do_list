@@ -12,7 +12,8 @@ const INITIAL_STATE = {
     done: false,
     key_from_me: 2,
     token_msg: '',
-    ack: 1
+    ack: 1,
+    ct: null
 };
 
 const editingTodoReducer = (state = INITIAL_STATE, action) => {
