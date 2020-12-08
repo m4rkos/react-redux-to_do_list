@@ -1,22 +1,32 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, View, Text, FlatList, SafeAreaView } from 'react-native';
 import { connect } from 'react-redux';
 
 import TodoListItem from './TodoListItem';
 import { toggleTodo, setEditingTodo } from '../actions';
 
-const TodoList = ({ todos, dispatchToggleTodo, dispatchSetEditingTodo }) => (
-    <View>
-        {todos.map(todo => (
-            <TodoListItem 
-                key={todo.id} 
-                todo={todo} 
-                onPressTodo={() => dispatchToggleTodo(todo.id)}
-                onLongPressTodo={() => dispatchSetEditingTodo(todo)}
+const TodoList = ({ todos, dispatchToggleTodo, dispatchSetEditingTodo }) => {
+    
+    const scrollViewRef = useRef();
+
+    return(
+        <View>        
+            <FlatList                 
+                ref={scrollViewRef}
+                data={todos}
+                renderItem={({ item: todo }) => 
+                    <TodoListItem 
+                        key={todo.id} 
+                        todo={todo} 
+                        onPressTodo={() => dispatchToggleTodo(todo.id)}
+                        onLongPressTodo={() => dispatchSetEditingTodo(todo)}
+                    />
+                }
+                onContentSizeChange={() => scrollViewRef.current.scrollToEnd({animated:true}) }                
             />
-        ))}           
-    </View>
-);
+        </View>
+    )
+};
 
 const style = StyleSheet.create({
     width: {

@@ -28,7 +28,7 @@ const TodoListItem = ({ todo, onPressTodo, onLongPressTodo }) => {
 			<View style={styles.line}>		
 				<View style={[ todo.key_from_me == 2 ? styles.msg_me : styles.msg_to ]}>
 					<Text style={ todo.done ? styles.lineThough : styles.normal } >
-						{ todo.text} {todo.ack}
+						{ todo.text} 
 					</Text>			
 					<Text style={styles.time}>00:00 </Text>{todo.key_from_me == 2 ? Ack(todo.ack) : null }
 				</View>				
