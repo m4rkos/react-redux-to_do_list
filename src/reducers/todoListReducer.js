@@ -1,7 +1,8 @@
 import { 
     ADD_TODO, 
     TOGGLE_TODO, 
-    UPDATE_TODO 
+    UPDATE_TODO,
+    ACK_TODO
 } from '../actions';
 
 let nextId = 1;
@@ -14,7 +15,9 @@ const todoListReducer = (state = [], action) =>{
                 id: nextId++,
                 text: action.text,
                 done: false,
-                key_from_me: action.key_from_me
+                key_from_me: action.key_from_me,
+                token_msg: action.token_msg,
+                ack: action.ack
             }
             return [...state, newTodo];
 
@@ -27,6 +30,17 @@ const todoListReducer = (state = [], action) =>{
                         done: !todo.done
                     }
                     //return Object.assign({}, todo, { done: !todo.done })
+                return todo;
+            });
+        
+        case ACK_TODO:                        
+            action.token_msg;
+            return state.map(todo => {
+                if(todo.token_msg === action.token_msg)
+                    return {
+                        ...todo, 
+                        ack: action.ack
+                    }                    
                 return todo;
             });
 

@@ -1,10 +1,12 @@
 // Actions creator
 
 export const ADD_TODO = 'ADD_TODO';
-export const addTodo = (text, key_from_me = 2) => ({
+export const addTodo = (text, key_from_me = 2, token_msg, ack = 0) => ({
     type: ADD_TODO,
     text: text,
-    key_from_me: key_from_me
+    key_from_me: key_from_me,
+    token_msg: token_msg,
+    ack: ack
 });
 
 export const TOGGLE_TODO = 'TOGGLE_TODO';
@@ -29,4 +31,11 @@ export const UPDATE_TODO = 'UPDATE_TODO';
 export const updateTodo = todo => ({
     type: UPDATE_TODO,
     todo
+});
+
+export const ACK_TODO = 'ACK_TODO';
+export const updateAckTodo = (ack, token_msg) => ({
+    type: ACK_TODO,
+    ack: ack,
+    token_msg: token_msg
 });

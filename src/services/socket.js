@@ -1,6 +1,6 @@
 //import AsyncStorage from '@react-native-community/async-storage';
 //import * as db from '../model/data_base';
-import { addTodo, setTodoText, updateTodo } from '../actions';
+import { addTodo, setTodoText, updateTodo, updateAckTodo } from '../actions';
 import store from '../store';
 
 let ip = ['messenger-hom.gelt.com.br:3030', '187.18.106.9:3030'];
@@ -19,7 +19,7 @@ export const socket = () =>{
     return socket;       
 };
 
-const makeId = () => {
+export const makeId = () => {
     let text = "";
     let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     for (let i = 0; i < 32; i++)
@@ -43,11 +43,11 @@ export const login = (key_remote_id) => {
     return "connected";
 };
 
-export const pushMsg = (key_to, msg, key_remote_id) => {       
+export const pushMsg = (key_to, msg, key_id) => {       
     let data = {
         Cmd: "TextMessage",
         data: msg,
-        key_id: makeId(),
+        key_id: key_id,
         to: `${key_to}`,        
     };
     sendMessage(_ => {
@@ -98,15 +98,54 @@ export function sendMessage(task) {
                             key_from_me: json.key_from_me,
                             msg: json.data,
                             status: json.msgStatus,
+                            token: json.token,
                             ct: json.creation,
                         }
                         console.log(arguments)   
                         if(data_msg.key_from_me == 1){
-                            store.dispatch(addTodo(data_msg.msg, data_msg.key_from_me));
+                            store.dispatch(addTodo(
+                                data_msg.msg, 
+                                data_msg.key_from_me,
+                                data_msg.token,
+                                data_msg.ack
+                            ));
                         }                                                
                         //storeContact('msgsNew', data_msg) 
                         //db.RegisterMSG(data_msg)
                         break
+
+                    case 'Ack':                        
+                        let data_ack = {
+                            token: json.token,
+                            ack: json.ack
+                        };
+                        store.dispatch(updateAckTodo(
+                            data_ack.ack,
+                            data_ack.token
+                        ));
+                        console.log(json);
+                        
+                        //console.log({msg: 'ack enviada: ' + ackKey});
+                        //store.dispatch(updateAckTodo(ackKey, ))
+                        // if (json.wa_key != undefined) {
+                        //     if (json.wa_key != "") {
+                        //         ackKey = json.wa_key;
+                        //         document.getElementById(json.token).id = json.wa_key;
+                        //     }
+                        // }
+                        // switch (parseInt(json.ack)) {
+                        //     case 1:
+                        //         $("#" + ackKey + " .bottom svg").html(Util.msgSend());
+                        //         break;
+                        //     case 2:
+                        //         $("#" + ackKey + " .bottom svg").html(Util.msgReceived());
+                        //         break;
+                        //     case 3:
+                        //     case 4:
+                        //         $("#" + ackKey + " .bottom svg").html(Util.msgRead());
+                        //         break;
+                        // }
+                        break;
 
                     case 'queryContact':
                         let data_contact = json.items                        

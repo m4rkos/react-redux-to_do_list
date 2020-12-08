@@ -5,18 +5,33 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 Icon.loadFont();
 
 const TodoListItem = ({ todo, onPressTodo, onLongPressTodo }) => {		    
+	
+	const Ack = (ack) =>{
+		switch (parseInt(ack)) {
+			case 1:
+				return(<Icon name="check" size={20} color="#000" style={styles.check} />);
+			case 2:
+				return(<Icon name="done-all" size={20} color="#000" style={styles.check} />);
+			case 3:
+				return(<Icon name="done-all" size={20} color="#5297ff" style={styles.check} />);
+		
+			default:
+				return(<Icon name="schedule" size={20} color="#000" style={styles.check} />);
+		}		
+	}
+
 	return (
 		<TouchableOpacity 
-			onPress={() => {onPressTodo()} }
-			onLongPress={()=>{onLongPressTodo()}}
+			onPress={ todo.key_from_me == 2 ? () => { onPressTodo() } : null }
+			onLongPress={ todo.key_from_me == 2 ? ()=>{ onLongPressTodo() } : null }
 			>
-			<View style={styles.line}>				
-				<Text style={[					
-					todo.done ? styles.lineThough : styles.normal, 					
-					todo.key_from_me == 2 ? styles.msg_me : styles.msg_to,					
-					]}>
-					<Icon name="check" size={20} color="#000" /> { todo.text}
-				</Text>
+			<View style={styles.line}>		
+				<View style={[ todo.key_from_me == 2 ? styles.msg_me : styles.msg_to ]}>
+					<Text style={ todo.done ? styles.lineThough : styles.normal } >
+						{ todo.text} {todo.ack}
+					</Text>			
+					<Text style={styles.time}>00:00 </Text>{todo.key_from_me == 2 ? Ack(todo.ack) : null }
+				</View>				
 			</View>
 		</TouchableOpacity>
 	);
@@ -50,10 +65,12 @@ const styles = StyleSheet.create({
 	},
 	normal: {
 		color: '#111',
+		position: 'relative',
 	},
 	lineText: {
 		fontSize: 20,
 		paddingLeft: 15,
+		position: 'relative',
 		//flex: 7
 	},
 	lineThough: {
@@ -63,10 +80,22 @@ const styles = StyleSheet.create({
 	avatar: {
 		aspectRatio: 1,
 		flex: 1,
-
 		marginLeft: 15,
-		borderRadius: 50
-	}
+		borderRadius: 50,
+	},
+	check: {
+		marginTop: 10,		
+		position: 'absolute',			
+		right: 10,
+		bottom: 6,
+	},
+	time: {		
+		alignSelf: 'flex-end',
+		paddingEnd: 18,
+		marginTop: 10,
+		marginBottom: -6,		
+	},
+
 });
 
 export default TodoListItem;

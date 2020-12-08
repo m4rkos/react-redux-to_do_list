@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, StyleSheet, Image } from 'react-native';
+import { Text, View, StyleSheet, Image, StatusBar } from 'react-native';
 import { Provider } from 'react-redux';
 
 import TodoForm from './components/TodoForm';
@@ -14,6 +14,7 @@ export default class TodoApp extends React.Component {
         return (
             <Provider store={store} >
 
+                <StatusBar backgroundColor="#fff" barStyle={"dark-content"} />
                 <View style={style.brand}>
                     <Image
                         style={style.tinyLogo}

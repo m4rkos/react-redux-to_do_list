@@ -5,24 +5,27 @@ import { connect } from 'react-redux';
 import { addTodo, setTodoText, updateTodo } from '../actions';
 import Input from './Input';
 
-import { pushMsg } from '../services/socket';
+import { pushMsg, makeId } from '../services/socket';
 
 class TodoForm extends React.Component {
     
     onChangeText(text){
+        //const { todo } = this.props;
+        //if(todo.key_from_me == 2){
         this.props.dispatchSetTodoText(text);        
+        //}        
     }
 
     onPress(){        
         const { todo } = this.props;
         
-        if(todo.id)
+        if(todo.id) // && todo.key_from_me == 2
             return this.props.dispatchUpdateTodo(todo);
         
         if( todo.text != '' ){
-            this.props.dispatchAddTodo(todo.text);  
-
-            pushMsg('359C28FD1E1140FCB335593FD19DEF6B', todo.text)
+            let token = makeId();
+            this.props.dispatchAddTodo(todo.text, 2, token);              
+            pushMsg('359C28FD1E1140FCB335593FD19DEF6B', todo.text, token)
 
         }else{
             Alert.alert('Preencha o texto!!');
