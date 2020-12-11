@@ -40,3 +40,9 @@ export const updateAckTodo = (ack, token_msg) => ({
     ack: ack,
     token_msg: token_msg
 });
+
+export const RESET_TODO = 'RESET_TODO';
+export const resetTodo = todo => ({
+    type: RESET_TODO,
+    todo
+});

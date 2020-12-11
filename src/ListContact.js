@@ -6,7 +6,6 @@ import { Provider } from 'react-redux';
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
 import store from './store';
-import { createTables, setChatList } from './model/storage';
 
 import * as socket from './services/socket';
 
@@ -27,35 +26,23 @@ export default class TodoApp extends React.Component {
                 name: 'MARCOS TESTE :)'
             }
         ];
-        
-        let user = 1;
-
-        createTables();
-
-        let chatListData = {
-            key_remote: data[0].token, 
-            key_remoto_to: data[user].token, 
-            name_to: data[user].name
-        };
-
-        setChatList(chatListData);        
-
         socket.login(data[0].token);
-        
         return (
             <Provider store={store}>
                 <ImageBackground
-                    source={ require('../assets/images/bg2.jpg') }
+                    source={
+                        require('../assets/images/bg2.jpg')
+                    }
                     style={style.image}
                 >
                 <StatusBar backgroundColor="#fff" barStyle={"dark-content"} />
                 <View style={[style.photo, style.imageContainer]}>
                     
                     <View style={style.photoContainer}>
-                        <Thumbnail circular source={{ uri: `https://messenger.talkall.com.br/profiles/${data[user].token}.jpeg` }} />
+                        <Thumbnail circular source={{ uri: `https://messenger.talkall.com.br/profiles/${data[1].token}.jpeg` }} />
                     </View>
                     <View style={style.nameContainer}>
-                        <Text style={style.textName}>{data[user].name}</Text>
+                        <Text style={style.textName}>{data[1].name}</Text>
                     </View>   
                     <View style={style.optionsContainer}>
                         <Icon name="more-vert" style={style.options} />                        
@@ -63,10 +50,11 @@ export default class TodoApp extends React.Component {
 
                 </View>            
                 <View style={style.container}>                    
-                    <TodoList user_data={data[user]} />                    
+                    <TodoList />
+                    
                 </View>
                 <View style={style.form}>
-                    <TodoForm user_data={data[user]} user_talkall={data[0].token} chat_list={user} />
+                    <TodoForm user_data={data[1]} />
                 </View>
                 </ImageBackground>
             </Provider>

@@ -1,13 +1,19 @@
-import React, { useRef } from 'react';
-import { StyleSheet, View, Text, FlatList, SafeAreaView } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { StyleSheet, View, Text, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 
 import TodoListItem from './TodoListItem';
-import { toggleTodo, setEditingTodo } from '../actions';
+import { toggleTodo, setEditingTodo, resetTodo } from '../actions';
+import { getMessagesByChatList } from '../model/storage';
 
-const TodoList = ({ todos, dispatchToggleTodo, dispatchSetEditingTodo }) => {
+const TodoList = ({ todos, dispatchToggleTodo, dispatchSetEditingTodo, dispatchResetTodo, user_data }) => {
     
     const scrollViewRef = useRef();
+    
+    useEffect( () => {
+        dispatchResetTodo([])
+        getMessagesByChatList(user_data.token);
+    }, [] );
 
     return(
         <View>        
@@ -43,6 +49,7 @@ export default connect(
     mapStateToProps, 
     { 
         dispatchToggleTodo: toggleTodo,
-        dispatchSetEditingTodo: setEditingTodo
+        dispatchSetEditingTodo: setEditingTodo,
+        dispatchResetTodo: resetTodo
     } 
 )(TodoList);

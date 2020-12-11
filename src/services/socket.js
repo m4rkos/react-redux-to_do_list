@@ -4,6 +4,7 @@ import { addTodo, setTodoText, updateTodo, updateAckTodo } from '../actions';
 import store from '../store';
 
 import { FormatShortTime } from '../services/formatDate';
+import { setMessagesByChatList, updateMessagesByChatList } from '../model/storage';
 
 let ip = ['messenger-hom.gelt.com.br:3030', '187.18.106.9:3030'];
 
@@ -109,9 +110,18 @@ export function sendMessage(task) {
                                 data_msg.msg, 
                                 data_msg.key_from_me,
                                 data_msg.token,
-                                data_msg.ack,
+                                data_msg.status, //ack
                                 FormatShortTime(data_msg.ct)
                             ));
+                            let msgData = {                                
+                                token: data_msg.token,
+                                key_from_me: data_msg.key_from_me,
+                                key_remote_id: data_msg.key_remote_id,                
+                                msg: data_msg.msg,
+                                status: data_msg.status,                
+                                ct: data_msg.ct                                
+                            }
+                            setMessagesByChatList(msgData);
                         }                                                
                         //storeContact('msgsNew', data_msg) 
                         //db.RegisterMSG(data_msg)
@@ -126,7 +136,8 @@ export function sendMessage(task) {
                             data_ack.ack,
                             data_ack.token
                         ));
-                        console.log(json);
+                        //console.log(json);
+                        updateMessagesByChatList(data_ack)
 
                         break;
 

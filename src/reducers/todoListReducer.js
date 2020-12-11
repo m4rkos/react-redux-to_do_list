@@ -2,7 +2,8 @@ import {
     ADD_TODO, 
     TOGGLE_TODO, 
     UPDATE_TODO,
-    ACK_TODO
+    ACK_TODO,
+    RESET_TODO
 } from '../actions';
 
 let nextId = 1;
@@ -46,14 +47,16 @@ const todoListReducer = (state = [], action) =>{
                 return todo;
             });
 
-        case UPDATE_TODO:
-            console.log('tesgg');
+        case UPDATE_TODO:            
             return state.map(todo => {
                 if(todo.id === action.todo.id){
                     return action.todo;
                 }
                 return todo;
             });
+
+        case RESET_TODO:
+            return [];
 
         default:
             return state;

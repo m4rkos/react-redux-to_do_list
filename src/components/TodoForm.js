@@ -1,13 +1,13 @@
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Alert, Keyboard } from 'react-native';
 import { connect } from 'react-redux';
 
 import { addTodo, setTodoText, updateTodo } from '../actions';
 import Input from './Input';
 
 import { pushMsg, makeId } from '../services/socket';
-
 import { FormatShortTime } from '../services/formatDate';
+import { setMessagesByChatList } from '../model/storage';
 
 import Icon from 'react-native-vector-icons/MaterialIcons'
 Icon.loadFont();
@@ -20,16 +20,29 @@ class TodoForm extends React.Component {
 
     onPress(){        
         const { todo } = this.props;
-        
-        if(todo.id) // && todo.key_from_me == 2
+
+        Keyboard.dismiss();
+
+        if(todo.id)
             return this.props.dispatchUpdateTodo(todo);
         
         if( todo.text != '' ){
             let token = makeId();
             let ct = Math.floor(Date.now() / 1000);
 
-            this.props.dispatchAddTodo(todo.text, 2, token, 0, FormatShortTime(ct));              
-            pushMsg('359C28FD1E1140FCB335593FD19DEF6B', todo.text, token)
+            this.props.dispatchAddTodo(todo.text, 2, token, 0, FormatShortTime(ct));                          
+            pushMsg(this.props.user_data.token, todo.text, token);
+
+            let msgData = {
+                talk_all_token_id: this.props.user_talkall,
+                token: token,
+                key_from_me: 2,
+                key_remote_id: this.props.user_data.token,                
+                msg: todo.text,
+                status: 1,                
+                ct: ct
+            }
+            setMessagesByChatList(msgData);
 
         }else{
             Alert.alert('Preencha o texto!!');
@@ -52,7 +65,7 @@ class TodoForm extends React.Component {
                         style={[styles.btn,
                             id ? styles.saveBg : styles.addBg
                         ]}
-                        onPress={()=> this.onPress()}
+                        onPress={()=> {this.onPress();}}
                         >
                         <Text style={styles.text_white}>
                             {id ? <Icon name="save" size={20} color="#fff" style={styles.check} /> : <Icon name="send" size={20} color="#fff" style={styles.check} />}
@@ -75,9 +88,7 @@ const styles = StyleSheet.create({
         marginRight: 10,               
         paddingTop: 18,
         paddingBottom: 18,
-
         borderRadius: 50,
-
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -85,7 +96,6 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-
         elevation: 5,
     },
     text_white: {
@@ -95,7 +105,6 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
         textTransform: 'uppercase',
     },
-
     //Containers
     formContainer: {
         flexDirection: 'row',
@@ -106,23 +115,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flex: 1,
     },
-
 })
-
-// Currying
-// (mapStateToProps, mapDispatchToProps) (function)
-
-// const mapDispatchToProps = dispatch =>{
-//     return {
-//         dispatchAddTodo: text => dispatch(addTodo(text))
-//     }
-// }
-
-// const mapDispatchToProps = {
-//     dispatchAddTodo: addTodo
-// }
-
-// export default connect(null, mapDispatchToProps)(TodoForm);
 
 const mapStateToProps = state =>{
     return {

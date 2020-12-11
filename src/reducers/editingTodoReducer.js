@@ -3,7 +3,8 @@ import {
     ADD_TODO,
     UPDATE_TODO,
     SET_EDITING_TODO,
-    ACK_TODO
+    ACK_TODO,
+    RESET_TODO
 } from '../actions';
 
 const INITIAL_STATE = {
@@ -27,6 +28,7 @@ const editingTodoReducer = (state = INITIAL_STATE, action) => {
         case ADD_TODO:
         case UPDATE_TODO:
         case ACK_TODO:
+        case RESET_TODO:
             return INITIAL_STATE;
 
         case SET_EDITING_TODO:
