@@ -3,6 +3,7 @@ import { addTodo, setTodoText, updateTodo, updateAckTodo } from '../actions';
 import store from '../store';
 
 import { FormatShortTime } from '../services/formatDate';
+import { pushMsg } from '../services/socket';
 
 /* --- Define DB and access or set data --- */
 
@@ -68,6 +69,10 @@ export const getMessagesByChatList = (chat_list_token) => {
                 const row = results.rows.item(i);                
                 messages.push(row);
 
+                if(messages[i].key_from_me == 2 && messages[i].status < 2){                    
+                    pushMsg(messages[i].key_remote_id, messages[i].data, messages[i].key_id);                
+                }                
+
                 store.dispatch(addTodo(
                     messages[i].data, 
                     messages[i].key_from_me,
@@ -124,7 +129,8 @@ export const setMessagesByChatList = (data) => {
         .then(([results]) => {
             const { insertId } = results;
             if(insertId > 0){
-                return console.log(`[insertedMessage], InsertId: ${insertId}`);
+                console.log(`[insertedMessage], InsertId: ${insertId}`);
+                return {id:insertId, }
             }            
             console.log('List is there!');
         });
@@ -144,7 +150,7 @@ export const updateMessagesByChatList = (data) => {
             if (results === undefined) {
                 return [];
             }                   
-            console.log(`[updateUser] update ack: ${data.status} !`);
+            console.log(`[updateUser] update ack: ${data.ack} !`);
         });
 }
 
@@ -213,7 +219,7 @@ export const createTables = () => {
                 'page_count INTEGER, ' + 
                 'forwarded INTEGER, ' +   
                 'ct DATETIME DEFAULT CURRENT_TIMESTAMP, ' +              
-                'UNIQUE(id_message, ct)' +
+                'UNIQUE(key_id)' +
             ');'
         )
     );

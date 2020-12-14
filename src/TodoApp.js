@@ -25,10 +25,13 @@ export default class TodoApp extends React.Component {
             },{
                 token: '359C28FD1E1140FCB335593FD19DEF6B',
                 name: 'MARCOS TESTE :)'
+            },{
+                token: 'D6D928FCB4B44D0AA21D2276F8D77D28',
+                name: 'RUAN KENNEDI'
             }
         ];
         
-        let user = 1;
+        let user = 2;
 
         createTables();
 
@@ -40,7 +43,7 @@ export default class TodoApp extends React.Component {
 
         setChatList(chatListData);        
 
-        socket.login(data[0].token);
+        socket.login(chatListData.key_remote);
         
         return (
             <Provider store={store}>

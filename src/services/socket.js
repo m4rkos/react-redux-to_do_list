@@ -95,6 +95,27 @@ export function sendMessage(task) {
             if (json.status == 200) {
 
                 switch (json.Cmd) {                    
+                    case 'Chat':
+                        json.items.forEach(chats => {
+                            for(let el = 0; el < 30; el++) {
+                                if(chats.messages[el].key_from_me == 1){
+                                    if(chats.messages[el].media_type == 1){                                        
+                                        let msgData = {                                
+                                            token: chats.messages[el].token,
+                                            key_from_me: chats.messages[el].key_from_me,
+                                            key_remote_id: chats.messages[el].key_remote_id,                
+                                            msg: chats.messages[el].data,
+                                            status: chats.messages[el].msgStatus,                
+                                            ct: chats.messages[el].creation
+                                        }
+                                        setMessagesByChatList(msgData);                                        
+                                        console.log(msgData);
+                                    }
+                                }
+                            }   
+                        });                        
+                        break
+                        
                     case 'Msg':                        
                         let data_msg = {
                             key_remote_id: json.key_remote_id,
@@ -122,9 +143,7 @@ export function sendMessage(task) {
                                 ct: data_msg.ct                                
                             }
                             setMessagesByChatList(msgData);
-                        }                                                
-                        //storeContact('msgsNew', data_msg) 
-                        //db.RegisterMSG(data_msg)
+                        }                                                                        
                         break
 
                     case 'Ack':                        
@@ -135,10 +154,8 @@ export function sendMessage(task) {
                         store.dispatch(updateAckTodo(
                             data_ack.ack,
                             data_ack.token
-                        ));
-                        //console.log(json);
+                        ));                        
                         updateMessagesByChatList(data_ack)
-
                         break;
 
                     case 'queryContact':
