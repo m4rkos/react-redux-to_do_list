@@ -57,9 +57,10 @@ export const getMessagesByChatList = (chat_list_token) => {
 
     return getDatabase().then(db => 
         db
-            .executeSql(`SELECT * FROM MESSAGES WHERE id_chat_list = (
+            .executeSql(`SELECT * FROM ( SELECT * FROM MESSAGES WHERE id_chat_list = (
                 SELECT id FROM CHAT_LIST WHERE key_remote_id_to = '${chat_list_token}' 
-            ) `)
+            ) order by creation desc limit 10 ) AS res 
+                ORDER BY creation ASC`)
             .then(([results]) => {
             if (results === undefined) {
                 return [];

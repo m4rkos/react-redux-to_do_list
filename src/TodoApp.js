@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, StatusBar, ImageBackground } from 'react-native';
+import { View, StyleSheet, StatusBar, ImageBackground, Image } from 'react-native';
 import { Thumbnail, Text } from 'native-base';
 import { Provider } from 'react-redux';
 
@@ -8,69 +8,90 @@ import TodoList from './components/TodoList';
 import store from './store';
 import { createTables, setChatList } from './model/storage';
 
-import * as socket from './services/socket';
+//import * as socket from './services/socket';
 
 import Icon from 'react-native-vector-icons/MaterialIcons'
 Icon.loadFont();
 
-export default class TodoApp extends React.Component {   
-    render() {
-        let data = [
-            {
-                token: '3D6ED84113EF4966B89E79073740300B',
-                name: 'MARCOS EDUARDO'
-            },{
-                token: '9720F31898A6402F9861FED3C9E49E37',
-                name: 'THAISE IUNGLEBODE'
-            },{
-                token: '359C28FD1E1140FCB335593FD19DEF6B',
-                name: 'MARCOS TESTE :)'
-            },{
-                token: 'D6D928FCB4B44D0AA21D2276F8D77D28',
-                name: 'RUAN KENNEDI'
-            }
-        ];
-        
-        let user = 2;
+export default class TodoApp extends React.Component {  
 
+    state = {
+        image: `https://messenger.talkall.com.br/profiles/${this.props.route.params.token}.jpeg`,
+        result: null,
+    }
+
+    render() {
+
+        const { image, result } = this.state;        
+
+        const checkImageURL = (url) =>{            
+            fetch(url)                
+                .then(res => {
+                    if(res.status == 404){                     
+                        console.log(res.status);                    
+                    }else{                    
+                        console.log(res.status);                    
+                    }
+                }
+            )
+        };
+        
+        let data = {
+                token: this.props.route.params.token,
+                name: this.props.route.params.name
+            };
+        
+        let contact = this.props.route.params.id;        
+        let user_token = this.props.route.params.user_token;
+        
         createTables();
 
         let chatListData = {
-            key_remote: data[0].token, 
-            key_remoto_to: data[user].token, 
-            name_to: data[user].name
+            key_remote: user_token, 
+            key_remoto_to: data.token, 
+            name_to: data.name
         };
 
-        setChatList(chatListData);        
+        setChatList(chatListData);      
 
-        socket.login(chatListData.key_remote);
+        let checkImage = checkImageURL(image)               
+        /*
+        {                                     
+            uri: `https://messenger.talkall.com.br/profiles/${data.token}.jpeg` 
+        }
+        */
         
-        return (
+        return (            
             <Provider store={store}>
                 <ImageBackground
                     source={ require('../assets/images/bg2.jpg') }
                     style={style.image}
                 >
-                <StatusBar backgroundColor="#fff" barStyle={"dark-content"} />
-                <View style={[style.photo, style.imageContainer]}>
-                    
-                    <View style={style.photoContainer}>
-                        <Thumbnail circular source={{ uri: `https://messenger.talkall.com.br/profiles/${data[user].token}.jpeg` }} />
-                    </View>
-                    <View style={style.nameContainer}>
-                        <Text style={style.textName}>{data[user].name}</Text>
-                    </View>   
-                    <View style={style.optionsContainer}>
-                        <Icon name="more-vert" style={style.options} />                        
-                    </View>    
+                    <StatusBar backgroundColor="#fff" barStyle={"dark-content"} />
+                    <View style={[style.photo, style.imageContainer]}>
+                        
+                        <View>
+                            <Icon name="arrow-back" 
+                            style={style.goBack} 
+                            onPress={() => this.props.navigation.navigate('ListContact')} />                        
+                            
+                        </View>
+                        <View style={style.photoContainer}>
+                            <Thumbnail circular source={
+                                checkImage != 404 ? { uri: image } : require('../assets/images/avatar.jpg')
+                            } />                            
+                        </View>
+                        <View style={style.nameContainer}>
+                            <Text style={style.textName}>{data.name}</Text>
+                        </View>   
 
-                </View>            
-                <View style={style.container}>                    
-                    <TodoList user_data={data[user]} />                    
-                </View>
-                <View style={style.form}>
-                    <TodoForm user_data={data[user]} user_talkall={data[0].token} chat_list={user} />
-                </View>
+                    </View>            
+                    <View style={style.container}>                    
+                        <TodoList user_data={data} />                    
+                    </View>
+                    <View style={style.form}>
+                        <TodoForm user_data={data} user_talkall={user_token} chat_list={contact} />
+                    </View>
                 </ImageBackground>
             </Provider>
         )
@@ -81,8 +102,8 @@ const style = StyleSheet.create(
     {
         container: {
             flex: 4,
-            paddingTop: 10,                
-            paddingBottom: 10,                
+            paddingTop: 5,                
+            paddingBottom: 5,                
             backgroundColor: 'rgba(0,0,0,0.02)',       
         },
         photo: {
@@ -90,8 +111,8 @@ const style = StyleSheet.create(
             borderBottomColor: 'rgba(0,0,0,0.1)',
             backgroundColor: 'rgba(255,255,255,0.4)',       
             borderBottomWidth: 1,  
-            paddingTop: 15,          
-            paddingBottom: 14,
+            paddingTop: 4,          
+            paddingBottom: 4,
             paddingLeft: 12,            
         },
         image: {
@@ -112,6 +133,7 @@ const style = StyleSheet.create(
         form: {            
             backgroundColor: '#f1f1f1',
             paddingTop: 10,
+            paddingStart: 5,
             paddingBottom: 5,
         },
 
@@ -143,5 +165,11 @@ const style = StyleSheet.create(
             fontSize: 40,
             paddingEnd: 10,
         },
+        goBack: {
+            fontSize: 30,
+            fontWeight: 'bold',
+            paddingTop: 13,
+            paddingEnd: 5,
+        }
     }
 )

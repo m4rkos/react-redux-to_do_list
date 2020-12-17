@@ -9,10 +9,64 @@ import { pushMsg, makeId } from '../services/socket';
 import { FormatShortTime } from '../services/formatDate';
 import { setMessagesByChatList } from '../model/storage';
 
+import AudioRecorderPlayer, {
+    AVEncoderAudioQualityIOSType,
+    AVEncodingOption,
+    AudioEncoderAndroidType,
+    AudioSet,
+    AudioSourceAndroidType,
+} from 'react-native-audio-recorder-player';
+
 import Icon from 'react-native-vector-icons/MaterialIcons'
 Icon.loadFont();
 
 class TodoForm extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoggingIn: false,
+            recordSecs: 0,
+            recordTime: '00:00:00',
+            currentPositionSec: 0,
+            currentDurationSec: 0,
+            playTime: '00:00:00',
+            duration: '00:00:00',
+        };
+        this.audioRecorderPlayer = new AudioRecorderPlayer();
+        this.audioRecorderPlayer.setSubscriptionDuration(0.09); // optional. Default is 0.1    
+    }
+
+    // To record audio
+    onStartRecord = async () => {
+        const path = 'hello.m4a';        
+        const audioSet = {        
+            AudioEncoderAndroid: AudioEncoderAndroidType.AAC,        
+            AudioSourceAndroid: AudioSourceAndroidType.MIC,        
+            AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,        
+            AVNumberOfChannelsKeyIOS: 2,        
+            AVFormatIDKeyIOS: AVEncodingOption.aac,        
+        };
+        console.log('audioSet', audioSet);        
+        const uri = await this.audioRecorderPlayer.startRecorder(path, audioSet);        
+        this.audioRecorderPlayer.addRecordBackListener((e) => {        
+            this.setState({        
+                recordSecs: e.current_position,        
+                recordTime: this.audioRecorderPlayer.mmssss(        
+                    Math.floor(e.current_position),        
+                ),        
+            });        
+        });        
+        console.log(`uri: ${uri}`);    
+    };
+    onStopRecord = async () => {        
+        const result = await this.audioRecorderPlayer.stopRecorder();        
+        this.audioRecorderPlayer.removeRecordBackListener();        
+        this.setState({
+            recordSecs: 0,        
+        });        
+        console.log(result);    
+    };
     
     onChangeText(text){        
         this.props.dispatchSetTodoText(text);                
@@ -20,7 +74,6 @@ class TodoForm extends React.Component {
 
     onPress(){        
         const { todo } = this.props;
-
         Keyboard.dismiss();
 
         if(todo.id)
@@ -55,11 +108,27 @@ class TodoForm extends React.Component {
         return (
             <View style={styles.formContainer} >
                 <View style={styles.inputContainer}>                
+                    <Text>{this.state.recordTime}</Text>
+                    {/* <TouchableOpacity 
+                        mode="contained" 
+                        icon="play" 
+                        style={[styles.btn, styles.saveBg]}                        
+                        onPress={() => this.onStartPlay()}
+                        >
+                        <Text style={styles.text_white}>PLAY</Text>
+                    </TouchableOpacity> */}
                     <Input 
                         onChangeText={text => this.onChangeText(text)}
-                        value={text}                        
+                        value={text}  
+                        onPressIn={() => this.onStartRecord()}
+                        // onPressOut={() => this.onStopRecord()}
                     />
                 </View>
+                <TouchableOpacity
+                    onPress={() => this.onStopRecord()}
+                >
+                    <Text>stop</Text>
+                </TouchableOpacity>
                 <View style={styles.buttonContainer}>                
                     <TouchableOpacity
                         style={[styles.btn,
@@ -85,9 +154,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#0984e3', 
     },
     btn: {    
-        marginRight: 10,               
-        paddingTop: 18,
-        paddingBottom: 18,
+        marginRight: 18,               
+        marginLeft: 12,
+        paddingTop: 14,
+        paddingBottom: 14,
         borderRadius: 50,
         shadowColor: "#000",
         shadowOffset: {
