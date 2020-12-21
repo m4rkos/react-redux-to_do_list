@@ -14,7 +14,11 @@ const INITIAL_STATE = {
     key_from_me: 2,
     token_msg: '',
     ack: 1,
-    ct: null
+    ct: null,
+    media_caption: null, 
+    media_title: null, 
+    media_mime_type: 1, 
+    media_url: null
 };
 
 const editingTodoReducer = (state = INITIAL_STATE, action) => {

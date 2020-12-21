@@ -20,7 +20,11 @@ const todoListReducer = (state = [], action) =>{
                 key_from_me: action.key_from_me,
                 token_msg: action.token_msg,
                 ack: action.ack,
-                ct: action.ct
+                ct: action.ct,
+                media_caption: action.media_caption, 
+                media_title: action.media_title, 
+                media_mime_type: action.media_mime_type, 
+                media_url: action.media_url
             }
             return [...state, newTodo];
 

@@ -10,7 +10,8 @@ import store from './store';
 import Icon from 'react-native-vector-icons/MaterialIcons'
 Icon.loadFont();
 
-export default class TodoApp extends React.Component {   
+export default class TodoApp extends React.Component {  
+
     render() {
         let data = [
             {
@@ -22,6 +23,12 @@ export default class TodoApp extends React.Component {
             },{
                 token: 'D6D928FCB4B44D0AA21D2276F8D77D28',
                 name: 'RUAN KENNEDI'
+            },{
+                token: 'F61047C540A04C5790FD1D173C3B2158',
+                name: 'BIA [COMERCIAL]'
+            },{
+                token: 'CkMW7n6ilY4TzDQwrbWQgV0NraFU9bVz',
+                name: 'PAULO THOME'
             }
         ];
         

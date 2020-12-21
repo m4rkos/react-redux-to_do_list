@@ -21,14 +21,9 @@ const Input = ({ onChangeText, onPressIn, onPressOut, value, placeholder = 'Digi
                 <Icon name="attach-file" size={20} style={styles.icons} />
             </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonContainer}
-            onPress={()=>{onPressIn()}}
-            // onPressIn={
-            //     ()=>{onPressIn()}
-            // }
-            // onPressOut={
-            //     ()=>{onPressOut()}
-            // }
+        <TouchableOpacity style={styles.buttonContainer}            
+            onPressIn={ ()=>{onPressIn()} }
+            onPressOut={ ()=>{onPressOut()} }
             >
             <Text>
                 <Icon name="mic" size={20} style={styles.icons} />

@@ -1,11 +1,24 @@
 // Actions creator
 
 export const ADD_TODO = 'ADD_TODO';
-export const addTodo = (text, key_from_me = 2, token_msg, ack = 0, ct) => ({
+export const addTodo = (
+    text, 
+    key_from_me = 2, 
+    token_msg, ack = 0, 
+    ct, 
+    media_caption = null, 
+    media_title = null, 
+    media_mime_type = 1, 
+    media_url = null
+) => ({
     type: ADD_TODO,
     text: text,
     key_from_me: key_from_me,
     token_msg: token_msg,
+    media_caption: media_caption,
+    media_title: media_title,
+    media_mime_type: media_mime_type,
+    media_url: media_url,
     ack: ack,
     ct: ct
 });

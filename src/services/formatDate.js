@@ -8,3 +8,8 @@ export const FormatShortTime = (timestamp) =>{
 
     return pad(hours) + ":" + pad(minutes)
 }
+
+export const GetRandomInt = (max) => {
+    return Math.floor(Math.random() * Math.floor(max));
+}
+  

@@ -3,7 +3,7 @@ import { addTodo, setTodoText, updateTodo, updateAckTodo } from '../actions';
 import store from '../store';
 
 import { FormatShortTime } from '../services/formatDate';
-import { pushMsg } from '../services/socket';
+import { pushMsg, pushAudio, pushAudioBase64 } from '../services/socket';
 
 /* --- Define DB and access or set data --- */
 
@@ -35,24 +35,6 @@ const getDatabase = async () => {
 
 /* -- Queries -- */
 
-// Read
-// export const getChatList = (key_remote, key_remoto_to) => {
-//     return getDatabase().then(db => 
-//         db
-//             .executeSql(`SELECT id FROM CHAT_LIST WHERE key_remote_id = '${key_remote}' and key_remote_id_to = '${key_remoto_to}' `)
-//             .then(([results]) => {
-//             if (results === undefined) {
-//                 return [];
-//             }            
-//             const chatList = [];
-//             for (let i = 0; i <= results.rows.length; i++) {
-//                 const row = results.rows.item(i);
-//                 chatList.push(row);
-//             }                        
-//             return chatList[0].id;
-//         })
-//     );
-// }
 export const getMessagesByChatList = (chat_list_token) => {
 
     return getDatabase().then(db => 
@@ -70,17 +52,47 @@ export const getMessagesByChatList = (chat_list_token) => {
                 const row = results.rows.item(i);                
                 messages.push(row);
 
-                if(messages[i].key_from_me == 2 && messages[i].status < 2){                    
-                    pushMsg(messages[i].key_remote_id, messages[i].data, messages[i].key_id);                
+                if(messages[i].key_from_me == 2 && messages[i].status < 2 ){                    
+                    switch (messages[i].media_mime_type) {
+                        case '3':
+                            pushAudioBase64(messages[i].key_remote_id, messages[i].data, messages[i].key_id, messages[i].media_duration);                
+                            break;
+                    
+                        default:
+                            pushMsg(messages[i].key_remote_id, messages[i].data, messages[i].key_id);                
+                            break;
+                    }                    
                 }                
 
-                store.dispatch(addTodo(
-                    messages[i].data, 
-                    messages[i].key_from_me,
-                    messages[i].key_id,
-                    messages[i].status, //ack
-                    FormatShortTime(messages[i].creation)
-                ));                                        
+                switch (messages[i].media_mime_type) {
+                    case '3':
+                        store.dispatch(addTodo(
+                            messages[i].media_url, 
+                            messages[i].key_from_me,
+                            messages[i].key_id,
+                            messages[i].status, //ack
+                            FormatShortTime(messages[i].creation),
+                            messages[i].media_caption,
+                            messages[i].media_name,
+                            messages[i].media_mime_type,
+                            messages[i].media_url
+                        ));                                               
+                        break;
+                
+                    default:
+                        store.dispatch(addTodo(
+                            messages[i].data, 
+                            messages[i].key_from_me,
+                            messages[i].key_id,
+                            messages[i].status, //ack
+                            FormatShortTime(messages[i].creation),
+                            messages[i].media_caption,
+                            messages[i].media_name,
+                            messages[i].media_mime_type,
+                            messages[i].media_url
+                        ));                                        
+                        break;
+                }                
             }                                          
             return messages;
         })
@@ -116,15 +128,31 @@ export const setMessagesByChatList = (data) => {
 
     return getDatabase()
         .then(db =>
-            db.executeSql(`INSERT INTO MESSAGES (id_chat_list, key_id, key_from_me, key_remote_id, data, status, creation ) 
+            db.executeSql(`INSERT INTO MESSAGES ( id_chat_list, 
+                key_id, 
+                key_from_me, 
+                key_remote_id, 
+                data, 
+                status, 
+                creation, 
+                media_caption, 
+                media_name, 
+                media_mime_type, 
+                media_url, 
+                media_duration ) 
                 VALUES (
-                    (${chat_list_id}), ?, ?, ?, ?, ?, ?) `, [                
+                    (${chat_list_id}), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) `, [                
                 data.token,
                 data.key_from_me,
                 data.key_remote_id,                
                 data.msg,
                 data.status,                
-                data.ct
+                data.ct,
+                data.media_caption,
+                data.media_title,
+                data.media_mime_type,
+                data.media_url,
+                data.media_duration
             ])
         )
         .then(([results]) => {

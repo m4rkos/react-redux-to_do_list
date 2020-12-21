@@ -46,6 +46,51 @@ export const login = (key_remote_id) => {
     return "connected";
 };
 
+export const pushAudio = (key_to, media_url, key_id) =>{
+    let data = { 
+        Cmd: "AudioMessage",
+        key_id: key_id,
+        to: `${key_to}`,
+        media_key: "", // Ver depois, implementação futura
+        media_duration: 0,
+        media_url: media_url,
+    }
+    sendMessage(_ => {
+        wsChannel.send(JSON.stringify(data));
+    });
+}
+
+export const pushAudioBase64 = (key_to, base64, key_id, media_duration) =>{
+    let data = { 
+        Cmd: "AudioMessage",
+        key_id: key_id,
+        to: `${key_to}`,
+        media_key: "", // Ver depois, implementação futura
+        media_duration: media_duration,
+        base64: base64,
+    }
+    sendMessage(_ => {
+        wsChannel.send(JSON.stringify(data));
+    });
+}
+
+export const sendDocument = (key_to, key_id, file_name, media_mime_type, page_count, media_url) => {
+    let data = {
+        Cmd: "DocumentMessage",
+        key_id: key_id,
+        to: `${key_to}`,
+        file_name: file_name,
+        media_caption: file_name,
+        media_title: file_name,
+        media_mime_type: media_mime_type,
+        page_count: page_count,
+        media_url: media_url,
+    }
+    sendMessage(_ => {
+        wsChannel.send(JSON.stringify(data));
+    });
+}
+
 export const pushMsg = (key_to, msg, key_id) => {       
     let data = {
         Cmd: "TextMessage",
@@ -76,6 +121,7 @@ export const searchContact = (contact) => {
 //         console.log('No data yet')    
 //     }
 // };
+
 
 export function sendMessage(task) {
     if (!wsChannel || wsChannel.readyState != WebSocketStateEnum.OPEN) {
@@ -132,7 +178,11 @@ export function sendMessage(task) {
                                 data_msg.key_from_me,
                                 data_msg.token,
                                 data_msg.status, //ack
-                                FormatShortTime(data_msg.ct)
+                                FormatShortTime(data_msg.ct),
+                                '', 
+                                '', 
+                                1, 
+                                ''
                             ));
                             let msgData = {                                
                                 token: data_msg.token,
@@ -140,7 +190,12 @@ export function sendMessage(task) {
                                 key_remote_id: data_msg.key_remote_id,                
                                 msg: data_msg.msg,
                                 status: data_msg.status,                
-                                ct: data_msg.ct                                
+                                ct: data_msg.ct,
+                                media_caption: '',
+                                media_title: '',
+                                media_mime_type: 1,
+                                media_url: uri,
+                                media_duration: 0                                
                             }
                             setMessagesByChatList(msgData);
                         }                                                                        

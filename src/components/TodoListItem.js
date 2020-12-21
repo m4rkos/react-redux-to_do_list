@@ -1,10 +1,44 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+
+import { Audio } from 'expo-av';
 
 import Icon from 'react-native-vector-icons/MaterialIcons'
 Icon.loadFont();
 
-const TodoListItem = ({ todo, onPressTodo, onLongPressTodo }) => {		    
+const TodoListItem = ({ todo, onPressTodo, onLongPressTodo }) => {		
+	
+	const [sound, setSound] = useState();
+    const [playing, setPlaying] = useState(false);
+
+	async function playSound(url) {        
+        try {            
+            const { sound } = await Audio.Sound.createAsync(
+                {uri: `${url}`}
+            );
+            setSound(sound);            
+            setPlaying(true);
+            await sound.playAsync()            
+
+        } catch (error) {            
+            console.log('there are something wrong :( ');
+        }        
+	}
+	
+	async function pauseSound() {
+		console.log('Pause Sound');		
+        setPlaying(false);
+        await sound.pauseAsync();
+        //await sound.unloadAsync();
+    }
+    
+    useEffect(() => {
+        return sound
+        ? () => {
+            console.log('Unloading Sound');
+            sound.unloadAsync(); }
+        : undefined;
+    }, [sound]);
 	
 	const Ack = (ack) =>{
 		switch (parseInt(ack)) {
@@ -20,18 +54,47 @@ const TodoListItem = ({ todo, onPressTodo, onLongPressTodo }) => {
 		}		
 	}
 
+	const messages = (todo) => {						
+		switch (todo.media_mime_type) {
+			case "2":				
+			case 2:				
+				console.log(todo)
+				let media = todo.media_url;
+				if(todo.media_url == ''){
+					media = todo.text;
+				} 
+				return (
+					<View style={[ todo.key_from_me == 2 ? styles.msg_me : styles.msg_to ]}>
+						<TouchableOpacity 
+						onPress={playing ? () => pauseSound() : () => playSound(todo.media_url)} 
+						>
+							<Text>
+								<Icon name={playing ? "pause" : "play-arrow"} size={50} color="#ee5253" />
+							</Text>
+						</TouchableOpacity>
+						<Text style={todo.key_from_me == 2 ? styles.time : styles.time2}>{todo.ct} </Text>{todo.key_from_me == 2 ? Ack(todo.ack) : null }
+					</View>	
+				)
+		
+			default:
+				return (
+					<View style={[ todo.key_from_me == 2 ? styles.msg_me : styles.msg_to ]}>
+						<Text style={ todo.done ? styles.lineThough : styles.normal } >
+							{ todo.text} 
+						</Text>			
+						<Text style={todo.key_from_me == 2 ? styles.time : styles.time2}>{todo.ct} </Text>{todo.key_from_me == 2 ? Ack(todo.ack) : null }
+					</View>	
+				)				
+		}
+	}
+
 	return (
-		<TouchableOpacity 
+		<TouchableOpacity 			
 			onPress={ todo.key_from_me == 2 ? () => { onPressTodo() } : null }
 			onLongPress={ todo.key_from_me == 2 ? ()=>{ onLongPressTodo() } : null }
 			>
-			<View style={styles.line}>		
-				<View style={[ todo.key_from_me == 2 ? styles.msg_me : styles.msg_to ]}>
-					<Text style={ todo.done ? styles.lineThough : styles.normal } >
-						{ todo.text} 
-					</Text>			
-					<Text style={todo.key_from_me == 2 ? styles.time : styles.time2}>{todo.ct} </Text>{todo.key_from_me == 2 ? Ack(todo.ack) : null }
-				</View>				
+			<View style={styles.line}>						
+				{messages(todo)}	
 			</View>
 		</TouchableOpacity>
 	);
