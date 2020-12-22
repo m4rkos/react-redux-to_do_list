@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Alert, Keyboard } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Alert, Keyboard, Modal } from 'react-native';
 import { connect } from 'react-redux';
 
 import { addTodo, setTodoText, updateTodo } from '../actions';
@@ -11,6 +11,7 @@ import { setMessagesByChatList } from '../model/storage';
 
 //import Recorder from './Recorder';
 import { Audio } from 'expo-av';
+import { Camera } from 'expo-camera';
 
 //import base64 from 'react-native-base64';
 //import * as FileSystem from 'expo-file-system';
@@ -29,62 +30,87 @@ class TodoForm extends React.Component {
             rec: null,
             sound: null,
             downloadProgress: 0,
+            timer: 0,
+            modalVisible: false,
+            hasPermission: null,
+            type: Camera.Constants.Type.back
         };
+    }
+
+    setModalVisible = (visible) => {
+        this.setState({ modalVisible: visible });
     }
 
     async startRecording() {
         try {
-            console.log('Requesting permissions..');
-            await Audio.requestPermissionsAsync();
-            await Audio.setAudioModeAsync({
-                allowsRecordingIOS: true,                
-                playsInSilentModeIOS: true,                                           
-            }); 
-            console.log('Starting recording..');     
-            recording = new Audio.Recording();       
-            await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
-            await recording.startAsync(); 
-            this.setState({rec: recording});            
-            console.log('Recording started');
+            console.log('Requesting permissions..');              
+            // const data = await this.performTimeConsumingTask();
+            // if(data !== null){
+                await Audio.requestPermissionsAsync();
+                await Audio.setAudioModeAsync({
+                    allowsRecordingIOS: true,                
+                    playsInSilentModeIOS: true,                                           
+                }); 
+                console.log('Starting recording..'); 
+                recording = null;              
+                recording = new Audio.Recording();       
+                await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);            
+                await recording.startAsync();
+                // setInterval(() => {
+                //     this.setState({timer: 1})
+                // }, 1000);           
+                this.setState({rec: recording});            
+                console.log('Recording started');
+            //}
         } catch (err) {
             console.error('Failed to start recording', err);
         }
     }
 
-    async stopRecording() {
-        console.log('Stopping recording..');        
-        this.setState({rec: undefined});        
-        await recording.stopAndUnloadAsync();        
-        const uri = recording.getURI(); 
-        console.log('Recording stopped and stored at', uri);    
+    performTimeConsumingTask = async() => {
+        return new Promise((resolve) =>
+            setTimeout(
+                () => { resolve('result') },
+                500
+            )
+        );
+    }
+    async stopRecording() {       
 
-        let token = makeId();
-        let ct = Math.floor(Date.now() / 1000);
+            console.log('Stopping recording..');        
+            //console.log(`Duration: ${this.timer}`);        
+            this.setState({rec: undefined});        
+            await recording.stopAndUnloadAsync();        
+            const uri = recording.getURI(); 
+            console.log('Recording stopped and stored at', uri);    
 
-        //const new_audio = await FileSystem.readAsStringAsync(uri);
-        this.props.dispatchAddTodo(uri, 2, token, 0, FormatShortTime(ct), '', '', 2, uri);                                 
+            let token = makeId();
+            let ct = Math.floor(Date.now() / 1000);
 
-        RNFS.readFile(uri, 'base64')
-        .then(res =>{
-            console.log(res);                        
-            pushAudioBase64(this.props.user_data.token, res, token, 10);        
+            //const new_audio = await FileSystem.readAsStringAsync(uri);
+            this.props.dispatchAddTodo(uri, 2, token, 0, FormatShortTime(ct), '', '', 2, uri);                                 
 
-            let msgData = {
-                talk_all_token_id: this.props.user_talkall,
-                token: token,
-                key_from_me: 2,
-                key_remote_id: this.props.user_data.token,                
-                msg: res,
-                status: 1,                
-                ct: ct,
-                media_caption: '',
-                media_title: '',
-                media_mime_type: 2,
-                media_url: uri,
-                media_duration: 10 
-            }
-            setMessagesByChatList(msgData);
-        });
+            RNFS.readFile(uri, 'base64')
+            .then(res =>{
+                //console.log(res);                        
+                pushAudioBase64(this.props.user_data.token, res, token, 10);        
+
+                let msgData = {
+                    talk_all_token_id: this.props.user_talkall,
+                    token: token,
+                    key_from_me: 2,
+                    key_remote_id: this.props.user_data.token,                
+                    msg: res,
+                    status: 1,                
+                    ct: ct,
+                    media_caption: '',
+                    media_title: '',
+                    media_mime_type: 2,
+                    media_url: uri,
+                    media_duration: 10 
+                }
+                setMessagesByChatList(msgData);
+            });
 
         //pushMsg(this.props.user_data.token, base64.encode(uri), token);        
 
@@ -117,12 +143,20 @@ class TodoForm extends React.Component {
     }
 
     componentWillUnmount(){
+        (async () => {
+            const { status } = await Camera.requestPermissionsAsync();
+            this.setState({hasPermission: status === 'granted'});
+        })();
         return this.sound
         ? () => {
             console.log('Unloading Sound');
             this.sound.unloadAsync(); 
         }
         : undefined;
+    }
+
+    attachmentTools(){
+        console.log('attach');
     }
     
     onChangeText(text){        
@@ -167,14 +201,70 @@ class TodoForm extends React.Component {
 
     render() {         
         const { text, id } = this.props.todo;
+        const { modalVisible, type, rec } = this.state;        
+
+        const camera = () =>{
+            return (
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}                
+                    onRequestClose={() => {
+                        Alert.alert("Modal has been closed.");
+                    }}
+                    >
+                    <View style={styles.container}>                        
+                        <Camera style={styles.camera} type={type}>
+                            <View style={styles.buttonContainer}>
+                                <View style={styles.closeButton} >
+                                    <TouchableOpacity                                
+                                        onPress={() => {
+                                        this.setModalVisible(!modalVisible);
+                                        }}
+                                    >
+                                        <Icon name="close" style={styles.close}/>
+                                    </TouchableOpacity>
+                                </View>                                
+                            </View>
+                            <View style={styles.openButton} >                                
+                                <TouchableOpacity
+                                    style={styles.btnFlip}
+                                    onPress={() => {
+                                        this.setState({
+                                            type:
+                                            type === Camera.Constants.Type.back
+                                                ? Camera.Constants.Type.front
+                                                : Camera.Constants.Type.back
+                                            }
+                                        );
+                                    }}>
+                                    <Icon name="flip" style={styles.flip}/>
+                                </TouchableOpacity>
+                                <TouchableOpacity                                
+                                    onPress={() => {
+                                        Alert.alert('photo :)')
+                                    }}
+                                >
+                                    <Icon name="camera" style={styles.cam}/>
+                                </TouchableOpacity>
+                            </View>
+                        </Camera>                        
+                    </View>
+                </Modal>
+            );
+        };
+        
         return (            
-            <View style={styles.formContainer} >                
+            <View style={styles.formContainer} > 
+                {camera()}                 
                 <View style={styles.inputContainer}>                                                        
                     <Input 
                         onChangeText={text => this.onChangeText(text)}
                         value={text}  
                         onPressIn={() => this.startRecording()}
                         onPressOut={() => this.stopRecording()}
+                        onPressTools={() => this.setModalVisible(true)}
+                        recording={rec}
                     />
                 </View>                
                 <View style={styles.buttonContainer}>                
@@ -194,7 +284,41 @@ class TodoForm extends React.Component {
     }
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({    
+    openButton: {
+        backgroundColor: 'rgba(0,0,0,0.5)',        
+        alignContent: 'center',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    closeButton: {        
+        alignContent: 'center',
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+    },
+    btnFlip: {
+        position: 'absolute',
+        right: 10,
+    },
+    flip: {        
+        color: '#fff',
+        padding: 20,
+        fontSize: 30,
+    },
+    cam: {        
+        color: '#fff',
+        padding: 10,
+        fontSize: 50,
+    },
+    close: {        
+        marginTop: 10,
+        marginEnd: 10,
+        padding: 10,
+        fontSize: 30,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        color: '#fff',
+        borderRadius: 50,
+    },
     padd: {
         padding: 10,
     },
@@ -239,6 +363,14 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flex: 1,
     },
+
+    //Camera
+    container: {
+        flex: 3,
+    },
+    camera: {
+        flex: 3,
+    }
 })
 
 const mapStateToProps = state =>{

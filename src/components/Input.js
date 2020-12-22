@@ -1,36 +1,47 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { TextInput, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+
 import Icon from 'react-native-vector-icons/MaterialIcons'
+
 Icon.loadFont();
 
-const Input = ({ onChangeText, onPressIn, onPressOut, value, placeholder = 'Digite aqui' }) => (
-    <View style={[styles.input, styles.formContainer]}>
+const Input = ({ onChangeText, onPressIn, onPressOut, value, placeholder = 'Digite aqui', onPressTools, recording }) => {
         
-        <Text style={styles.buttonContainer}>
-            <Icon name="mood" size={20} color="#aaa" />
-        </Text>
-        
-        <TextInput             
-            onChangeText={onChangeText}
-            value={value}
-            placeholder={placeholder}
-            style={styles.inputContainer}
-        />
-        <TouchableOpacity style={styles.buttonContainer}>
-            <Text>
-                <Icon name="attach-file" size={20} style={styles.icons} />
+    return(
+        <View style={[styles.input, styles.formContainer]}>
+            
+            <Text style={styles.buttonContainer}>
+                <Icon name="mood" size={20} color="#aaa" />
             </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonContainer}            
-            onPressIn={ ()=>{onPressIn()} }
-            onPressOut={ ()=>{onPressOut()} }
-            >
-            <Text>
-                <Icon name="mic" size={20} style={styles.icons} />
-            </Text>
-        </TouchableOpacity>
-    </View>
-);
+                    
+            <TextInput             
+                onChangeText={onChangeText}
+                value={value}
+                placeholder={placeholder}
+                style={styles.inputContainer}
+            />
+            
+            <TouchableOpacity style={styles.buttonContainer}
+                onPress={ ()=>{onPressTools()} }
+                >
+                <Text>
+                    <Icon name="camera-alt" size={20} style={styles.icons} />
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.buttonContainer}            
+                onPress={ recording ? ()=>onPressOut() : ()=>onPressIn() } 
+                //onPressIn={ ()=>{onPressIn()} }
+                //onPressOut={ ()=>{onPressOut()} }
+                >
+                <Text>
+                    <Icon name={ recording ? "stop": "mic"} size={20} style={styles.icons} />                    
+                </Text>
+            </TouchableOpacity>
+
+            
+        </View>
+    )
+};
 
 const styles = StyleSheet.create({
     icons: {

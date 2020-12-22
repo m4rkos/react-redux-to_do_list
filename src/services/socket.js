@@ -67,7 +67,8 @@ export const pushAudioBase64 = (key_to, base64, key_id, media_duration) =>{
         to: `${key_to}`,
         media_key: "", // Ver depois, implementação futura
         media_duration: media_duration,
-        base64: base64,
+        base64: 'data:audio/ogg;base64,'+base64,
+        media_mime_type: 'audio/ogg',
     }
     sendMessage(_ => {
         wsChannel.send(JSON.stringify(data));
@@ -102,6 +103,36 @@ export const pushMsg = (key_to, msg, key_id) => {
         wsChannel.send(JSON.stringify(data));
     });
 };
+
+export const pushImageBase64 = (key_to, base64, key_id, media_caption) => {
+    let data = {
+        Cmd: "ImageMessage",
+        key_id: key_id,
+        to: key_to,
+        thump_image: "",
+        base64: base64,
+        media_caption: media_caption,
+        media_mime_type: 'image/jpeg',
+    };
+    sendMessage(_ => {
+        wsChannel.send(JSON.stringify(data));
+    });
+}
+
+export const pushImage = (key_to, media_url, key_id, media_caption) => {
+    let data = {
+        Cmd: "ImageMessage",
+        key_id: key_id,
+        to: key_to,
+        thump_image: "",
+        media_caption: media_caption,
+        media_mime_type: 'image/jpeg',
+        media_url: media_url
+    };
+    sendMessage(_ => {
+        wsChannel.send(JSON.stringify(data));
+    });
+}
 
 export const searchContact = (contact) => {       
     let data = {
