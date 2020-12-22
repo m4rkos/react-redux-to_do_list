@@ -32,13 +32,13 @@ const TodoListItem = ({ todo, onPressTodo, onLongPressTodo }) => {
         //await sound.unloadAsync();
     }
     
-    useEffect(() => {
-        return sound
-        ? () => {
-            console.log('Unloading Sound');
-            sound.unloadAsync(); }
-        : undefined;
-    }, [sound]);
+    // useEffect(() => {
+    //     return sound
+    //     ? () => {
+    //         console.log('Unloading Sound');
+    //         sound.unloadAsync(); }
+    //     : undefined;
+    // }, [sound]);
 	
 	const Ack = (ack) =>{
 		switch (parseInt(ack)) {
@@ -57,8 +57,7 @@ const TodoListItem = ({ todo, onPressTodo, onLongPressTodo }) => {
 	const messages = (todo) => {						
 		switch (todo.media_mime_type) {
 			case "2":				
-			case 2:				
-				console.log(todo)
+			case 2:								
 				let media = todo.media_url;
 				if(todo.media_url == ''){
 					media = todo.text;

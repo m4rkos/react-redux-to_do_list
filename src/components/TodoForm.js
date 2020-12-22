@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { addTodo, setTodoText, updateTodo } from '../actions';
 import Input from './Input';
 
-import { pushMsg, pushAudioBase64, pushAudio, makeId } from '../services/socket';
+import { pushMsg, pushAudioBase64, pushAudio, makeId, pushImageBase64 } from '../services/socket';
 import { FormatShortTime, GetRandomInt } from '../services/formatDate';
 import { setMessagesByChatList } from '../model/storage';
 
@@ -155,9 +155,9 @@ class TodoForm extends React.Component {
         : undefined;
     }
 
-    attachmentTools(){
-        console.log('attach');
-    }
+    // attachmentTools(){
+    //     console.log('attach');
+    // }
     
     onChangeText(text){        
         this.props.dispatchSetTodoText(text);                
@@ -199,6 +199,19 @@ class TodoForm extends React.Component {
         
     }
 
+    async snapPhoto() {       
+        console.log('Button Pressed');
+        if (this.camera) {
+            console.log('Taking photo');
+            const options = { quality: 1, base64: true, fixOrientation: true, 
+            exif: true};
+            await this.camera.takePictureAsync(options).then(photo => {
+                photo.exif.Orientation = 1;            
+                console.log(photo.base64);            
+            });     
+        }
+    }
+
     render() {         
         const { text, id } = this.props.todo;
         const { modalVisible, type, rec } = this.state;        
@@ -214,7 +227,11 @@ class TodoForm extends React.Component {
                     }}
                     >
                     <View style={styles.container}>                        
-                        <Camera style={styles.camera} type={type}>
+                        <Camera 
+                        style={styles.camera} 
+                        type={type}
+                        ref={ (ref) => {this.camera = ref} }
+                        >
                             <View style={styles.buttonContainer}>
                                 <View style={styles.closeButton} >
                                     <TouchableOpacity                                
@@ -242,9 +259,9 @@ class TodoForm extends React.Component {
                                 </TouchableOpacity>
                                 <TouchableOpacity                                
                                     onPress={() => {
-                                        Alert.alert('photo :)')
+                                        this.snapPhoto()
                                     }}
-                                >
+                                    >
                                     <Icon name="camera" style={styles.cam}/>
                                 </TouchableOpacity>
                             </View>
