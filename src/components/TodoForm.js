@@ -203,11 +203,17 @@ class TodoForm extends React.Component {
         console.log('Button Pressed');
         if (this.camera) {
             console.log('Taking photo');
-            const options = { quality: 1, base64: true, fixOrientation: true, 
-            exif: true};
+            const options = { 
+                quality: 1, 
+                base64: true, 
+                fixOrientation: true, 
+                exif: true, 
+                skipProcessing: true
+            };
             await this.camera.takePictureAsync(options).then(photo => {
                 photo.exif.Orientation = 1;            
-                console.log(photo.uri);                    
+                
+                console.log(photo);                    
                 
                 let token = makeId();
                 let ct = Math.floor(Date.now() / 1000);

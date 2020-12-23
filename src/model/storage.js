@@ -41,7 +41,7 @@ export const getMessagesByChatList = (chat_list_token) => {
         db
             .executeSql(`SELECT * FROM ( SELECT * FROM MESSAGES WHERE id_chat_list = (
                 SELECT id FROM CHAT_LIST WHERE key_remote_id_to = '${chat_list_token}' 
-            ) order by creation desc limit 100 ) AS res 
+            ) order by creation desc limit 30 ) AS res 
                 ORDER BY creation ASC`)
             .then(([results]) => {
             if (results === undefined) {
@@ -80,7 +80,7 @@ export const getMessagesByChatList = (chat_list_token) => {
                             FormatShortTime(messages[i].creation),
                             messages[i].media_caption,
                             messages[i].media_name,
-                            messages[i].media_mime_type,
+                            3,
                             messages[i].media_url
                         ));                                               
                         break;
