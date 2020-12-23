@@ -3,7 +3,7 @@ import { addTodo, setTodoText, updateTodo, updateAckTodo } from '../actions';
 import store from '../store';
 
 import { FormatShortTime } from '../services/formatDate';
-import { pushMsg, pushAudio, pushAudioBase64 } from '../services/socket';
+import { pushMsg, pushAudio, pushAudioBase64, pushImageBase64 } from '../services/socket';
 
 /* --- Define DB and access or set data --- */
 
@@ -55,6 +55,12 @@ export const getMessagesByChatList = (chat_list_token) => {
                 if(messages[i].key_from_me == 2 && messages[i].status < 2 ){                    
                     switch (messages[i].media_mime_type) {
                         case '3':
+                        case 3:
+                            pushImageBase64(messages[i].key_remote_id, messages[i].data, messages[i].key_id, '');                
+                            break;
+
+                        case '2':
+                        case 2:
                             pushAudioBase64(messages[i].key_remote_id, messages[i].data, messages[i].key_id, messages[i].media_duration);                
                             break;
                     
@@ -66,6 +72,20 @@ export const getMessagesByChatList = (chat_list_token) => {
 
                 switch (messages[i].media_mime_type) {
                     case '3':
+                        store.dispatch(addTodo(
+                            messages[i].media_url, 
+                            messages[i].key_from_me,
+                            messages[i].key_id,
+                            messages[i].status, //ack
+                            FormatShortTime(messages[i].creation),
+                            messages[i].media_caption,
+                            messages[i].media_name,
+                            messages[i].media_mime_type,
+                            messages[i].media_url
+                        ));                                               
+                        break;
+
+                    case '2':
                         store.dispatch(addTodo(
                             messages[i].media_url, 
                             messages[i].key_from_me,

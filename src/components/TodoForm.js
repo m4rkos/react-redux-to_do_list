@@ -207,7 +207,31 @@ class TodoForm extends React.Component {
             exif: true};
             await this.camera.takePictureAsync(options).then(photo => {
                 photo.exif.Orientation = 1;            
-                console.log(photo.base64);            
+                console.log(photo.uri);                    
+                
+                let token = makeId();
+                let ct = Math.floor(Date.now() / 1000);
+                
+                this.props.dispatchAddTodo('', 2, token, 0, FormatShortTime(ct), '', '', 3, photo.uri);
+                pushImageBase64(this.props.user_data.token, photo.base64, token, '');      
+                
+                let msgData = {
+                    talk_all_token_id: this.props.user_talkall,
+                    token: token,
+                    key_from_me: 2,
+                    key_remote_id: this.props.user_data.token,                
+                    msg: photo.base64,
+                    status: 1,                
+                    ct: ct,
+                    media_caption: '',
+                    media_title: '',
+                    media_mime_type: 3,
+                    media_url: photo.uri,
+                    media_duration: 0 
+                }
+                setMessagesByChatList(msgData);
+
+                this.setModalVisible(false); 
             });     
         }
     }
@@ -236,9 +260,8 @@ class TodoForm extends React.Component {
                                 <View style={styles.closeButton} >
                                     <TouchableOpacity                                
                                         onPress={() => {
-                                        this.setModalVisible(!modalVisible);
-                                        }}
-                                    >
+                                            this.setModalVisible(!modalVisible);
+                                        }}>
                                         <Icon name="close" style={styles.close}/>
                                     </TouchableOpacity>
                                 </View>                                
@@ -259,7 +282,8 @@ class TodoForm extends React.Component {
                                 </TouchableOpacity>
                                 <TouchableOpacity                                
                                     onPress={() => {
-                                        this.snapPhoto()
+                                        this.snapPhoto();
+                                        //this.setModalVisible(!modalVisible);
                                     }}
                                     >
                                     <Icon name="camera" style={styles.cam}/>

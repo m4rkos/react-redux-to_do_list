@@ -110,7 +110,7 @@ export const pushImageBase64 = (key_to, base64, key_id, media_caption) => {
         key_id: key_id,
         to: key_to,
         thump_image: "",
-        base64: base64,
+        base64: 'data:image/jpeg;base64,'+base64,
         media_caption: media_caption,
         media_mime_type: 'image/jpeg',
     };

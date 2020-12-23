@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { Text, View, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
 import { Audio } from 'expo-av';
 
@@ -56,6 +56,19 @@ const TodoListItem = ({ todo, onPressTodo, onLongPressTodo }) => {
 
 	const messages = (todo) => {						
 		switch (todo.media_mime_type) {
+			case "3":
+			case 3:				
+				return (
+					<View style={[ todo.key_from_me == 2 ? styles.msg_me : styles.msg_to ]}>
+						<Image style={styles.image}
+							source={{
+								uri: todo.media_url
+							}}
+						/>
+						<Text style={todo.key_from_me == 2 ? styles.time : styles.time2}>{todo.ct} </Text>{todo.key_from_me == 2 ? Ack(todo.ack) : null }
+					</View>	
+				)
+
 			case "2":				
 			case 2:								
 				let media = todo.media_url;
@@ -100,7 +113,10 @@ const TodoListItem = ({ todo, onPressTodo, onLongPressTodo }) => {
 }
 
 const styles = StyleSheet.create({
-	
+	image:{
+		width: 280,
+		height: 360,
+	},	
 	msg_me: {
 		minHeight: 55,			
 		padding: 12,		
